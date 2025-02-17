@@ -1,7 +1,7 @@
 # Tienda personalizable (Variable)
 
 | Nombre: | articulos |
------------------------
+|--------|------|
 | Valor= | {
   "id": "",
   "1": "",
@@ -105,9 +105,9 @@
   "r20": "",
   "s20": "∞"
 } |
------------------------
+|--------|------|
 | Nombre: | respuestas |
------------------------
+|--------|------|
 | Valor= | {
   "re1": "Articulo . usado correctamente",
   "re2": "Articulo . usado correctamente",
