@@ -1,0 +1,25 @@
+PREFIJO: +set-tienda (o cualquiera)
+
+$nomention
+$onlyAdmin[]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[id;$sendEmbedMessage[$channelID;;⚙️ | Configuración de la tienda;;
+👋 ¡Hola! <@$authorID>
+
+Acá podrás configurar la tienda del servidor, podrás crear articulos, eliminar articulos y editar articulos a tu gusto.
+
+Podrás crear hasta 20 articulos
+
+;6e00ff;;;$serverName[$guildID];$serverIcon;;;;yes]]
+$newSelectMenu[set-tienda;0;1;Configura tu tienda;$var[id]]
+$addSelectMenuOption[set-tienda;Crear articulo;+1;Crea un articulo para la tienda;;✅;$var[id]]
+$addSelectMenuOption[set-tienda;Eliminar articulo;-1;Elimina un articulo de la tienda;;⛔;$var[id]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%addSelectMenuOption[set-tienda\;%{DOL}%json[%{DOL}%var[tico\]\]\;at-%{DOL}%var[tico\]\;Edita este articulo\;\;💼\;%{DOL}%var[id\]\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+$jsonSetString[id;$var[id]]
+$setUserVar[articulos;$jsonStringify;$botID;$guildID]
