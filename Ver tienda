@@ -1,0 +1,27 @@
+PREFIJO: +tienda (o cualquiera)
+
+$nomention
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$var[tico2;0]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%var[tico2\;%{DOL}%sum[%{DOL}%var[tico2\]\;1\]\]
+%{DOL}%if[%{DOL}%var[tico2\]<11\]
+%{DOL}%var[art\;%{DOL}%var[art\]
+``%{DOL}%var[tico2\]`` - **%{DOL}%json[%{DOL}%var[tico\]\]** | ``$%{DOL}%numberSeparator[%{DOL}%json[v%{DOL}%var[tico\]\]\]``
+%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%json[d%{DOL}%var[tico\]\]==\]\;true\;\;1\]\;false\;%{DOL}%json[d%{DOL}%var[tico\]\]
+\;1\]\]
+%{DOL}%endif
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+
+$title[💼 | Tienda de $serverName[$guildID]]
+$description[Para comprar un articulo usa ``$comprar-articulo <nombre>``, para ver la información de una articulo usa ``$info-articulo <nombre>``
+$replaceText[$replaceText[$checkCondition[$var[art]==];true;
+No hay nada en esta tienda, posiblemente fué robada 😱;1];false;$var[art];1]]
+$color[6e00ff]
+$footer[$if[$var[tico2]>=11]Página 1/2$elsePágina 1/1$endif]
+$addButton[no;t-<;;secondary;yes;⬅️;]
+$addButton[no;t->;;secondary;$if[$var[tico2]>=11]no$elseyes$endif;➡️;]
