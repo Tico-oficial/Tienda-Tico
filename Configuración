@@ -1,0 +1,312 @@
+PREFIJO: $onInteraction
+
+$nomention
+$onlyAdmin[]
+$onlyIf[$or[$customID==set-tienda;$customID==m-set-tienda;$customID==cf-at;$customID==t-<;$customID==t->]==true;]
+$if[$customID==set-tienda]
+
+$if[$message==+1]
+$newModal[m-set-tienda;Crea un articulo]
+$addTextInput[n+1;short;Nombre del articulo;;25;yes;;Ejemplo: Pizza]
+$elseif[$message==-1]
+$newModal[m-set-tienda;Elimina un articulo]
+$addTextInput[n-1;short;Nombre del articulo;;25;yes;;Ejemplo: Pizza]
+$elseif[$or[$message==at-1;$message==at-2;$message==at-3;$message==at-4;$message==at-5;$message==at-6;$message==at-7;$message==at-8;$message==at-9;$message==at-10;$message==at-11;$message==at-12;$message==at-13;$message==at-14;$message==at-15;$message==at-16;$message==at-17;$message==at-18;$message==at-19;$message==at-20]==true]
+$removeAllComponents
+$ephemeral
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%message==at-%{DOL}%var[tico\]\]
+%{DOL}%var[jus\;%{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addField[
+⚙️ | Editando articulo\;
+**Nombre:** %{DOL}%json[%{DOL}%var[tico\]\]
+
+**Precio:** ``$%{DOL}%numberSeparator[%{DOL}%json[v%{DOL}%var[tico\]\]\]``
+
+**Disponibles:** %{DOL}%json[s%{DOL}%var[tico\]\]
+
+**Descripción:** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%json[d%{DOL}%var[tico\]\]==\]\;true\;Ninguna descripción especificada\;1\]\;false\;%{DOL}%json[d%{DOL}%var[tico\]\]\;1\]
+
+**Rol a dar:** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%roleExists[%{DOL}%json[r%{DOL}%var[tico\]\]\]\;true\;<@&%{DOL}%json[r%{DOL}%var[tico\]\]>\;1\]\;false\;Ninguno\;1\]
+
+**Respuesta (al usarlo):** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%jsonParse[%{DOL}%getUserVar[respuestas\;%{DOL}%botID\;%{DOL}%guildID\]\]%{DOL}%json[re%{DOL}%var[tico\]\]==Articulo . usado correctamente\]\;true\;Ninguna respuesta configurada\;1\]\;false\;%{DOL}%jsonParse[%{DOL}%getUserVar[respuestas\;%{DOL}%botID\;%{DOL}%guildID\]\]%{DOL}%json[re%{DOL}%var[tico\]\]\;1\]
+
+Para comprar este articulo usa ``$comprar-articulo %{DOL}%var[jus\]``\]
+%{DOL}%footer[%{DOL}%serverName[%{DOL}%guildID\]\]
+%{DOL}%footerIcon[%{DOL}%serverIcon\]
+%{DOL}%color[6e00ff\]
+%{DOL}%newSelectMenu[cf-at\;0\;1\;💼 | Edita este articulo\;\]
+%{DOL}%addSelectMenuOption[cf-at\;Precio\;prec-%{DOL}%var[tico\]\;Edita el precio\;\;💸\;\]
+%{DOL}%addSelectMenuOption[cf-at\;Rol a dar\;rol-%{DOL}%var[tico\]\;Edita el rol a dar\;\;🛠️\;\]
+%{DOL}%addSelectMenuOption[cf-at\;Descripción\;desc-%{DOL}%var[tico\]\;Edita la descripción\;\;✏️\;\]
+%{DOL}%addSelectMenuOption[cf-at\;Respuesta\;res-%{DOL}%var[tico\]\;Edita la respuesta al usar este articulo\;\;👍\;\]
+%{DOL}%addSelectMenuOption[cf-at\;Disponibles\;dis-%{DOL}%var[tico\]\;Edita la cantidad disponible de este articulo\;\;🔢\;\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
+$endif
+
+$elseif[$customID==m-set-tienda]
+
+$if[$input[n+1]!=]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+
+$var[tico1;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico1\]\]\]==%{DOL}%toLowercase[%{DOL}%input[n+1\]\]\]
+
+%{DOL}%addField[❌ | Error\;
+Este articulo ya existe\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[stop\;si\]
+
+%{DOL}%endif
+
+%{DOL}%var[tico1\;%{DOL}%sum[%{DOL}%var[tico1\]\;1\]\]
+]]]
+
+$if[$var[stop]==si]
+$stop
+$endif
+
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%ephemeral
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]==\]
+
+%{DOL}%jsonSetString[%{DOL}%var[tico\]\;%{DOL}%input[n+1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+
+%{DOL}%addField[✅ | Articulo creado\;
+Se creó correctamente el nuevo articulo con el nombre **%{DOL}%input[n+1\]**\]
+%{DOL}%color[00ff00\]
+%{DOL}%stop
+
+%{DOL}%elseif[%{DOL}%var[tico\]>=20\]
+
+%{DOL}%addField[❌ | Error\;
+Ya no hay más espacio disponible para más articulos :(\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[alto\;si\]
+%{DOL}%stop
+
+%{DOL}%else
+
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+
+%{DOL}%endif
+]]]
+$if[$var[alto]==si]
+$stop
+$endif
+$removeAllComponents[$json[id]]
+$newSelectMenu[set-tienda;0;1;Configura tu tienda;$json[id]]
+$addSelectMenuOption[set-tienda;Crear articulo;+1;Crea un articulo para la tienda;;✅;$json[id]]
+$addSelectMenuOption[set-tienda;Eliminar articulo;-1;Elimina un articulo de la tienda;;⛔;$json[id]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%addSelectMenuOption[set-tienda\;%{DOL}%json[%{DOL}%var[tico\]\]\;at-%{DOL}%var[tico\]\;Edita este articulo\;\;💼\;%{DOL}%json[id\]\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+$endif
+
+$if[$input[n-1]!=]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%ephemeral
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico\]\]\]==%{DOL}%toLowercase[%{DOL}%input[n-1\]\]\]
+
+%{DOL}%jsonSetString[%{DOL}%var[tico\]\;\]
+%{DOL}%jsonSetString[v%{DOL}%var[tico\]\;0\]
+%{DOL}%jsonSetString[d%{DOL}%var[tico\]\;\]
+%{DOL}%jsonSetString[r%{DOL}%var[tico\]\;\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%addField[✅ | Articulo eliminado\;
+Se eliminó correctamente el articulo **%{DOL}%input[n-1\]**\]
+%{DOL}%color[00ff00\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%var[tico\]>=20\]
+
+%{DOL}%addField[❌ | Error\;
+El articulo no existe en la tienda\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[stop\;si\]
+%{DOL}%stop
+%{DOL}%else
+
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+
+%{DOL}%endif
+
+]]]
+
+$if[$var[stop]!=si]
+$jsonParse[$getUserVar[respuestas;$botID;$guildID]]
+$jsonSetString[re$var[tico];Articulo . usado correctamente]
+$setUserVar[respuestas;$jsonStringify;$botID;$guildID]
+
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$removeAllComponents[$json[id]]
+$newSelectMenu[set-tienda;0;1;Configura tu tienda;$json[id]]
+$addSelectMenuOption[set-tienda;Crear articulo;+1;Crea un articulo para la tienda;;✅;$json[id]]
+$addSelectMenuOption[set-tienda;Eliminar articulo;-1;Elimina un articulo de la tienda;;⛔;$json[id]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%addSelectMenuOption[set-tienda\;%{DOL}%json[%{DOL}%var[tico\]\]\;at-%{DOL}%var[tico\]\;Edita este articulo\;\;💼\;%{DOL}%json[id\]\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+$endif
+
+$endif
+
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%input[prec-%{DOL}%var[tico\]\]!=\]
+%{DOL}%if[%{DOL}%isNumber[%{DOL}%input[prec-%{DOL}%var[tico\]\]\]==true\]
+%{DOL}%jsonSetString[v%{DOL}%var[tico\]\;%{DOL}%input[prec-%{DOL}%var[tico\]\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%var[?\;si\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%addField[❌ | Error\;
+Número invalido\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[?\;no\]
+%{DOL}%stop
+%{DOL}%endif
+%{DOL}%elseif[%{DOL}%input[rol-%{DOL}%var[tico\]\]!=\]
+%{DOL}%if[%{DOL}%roleExists[%{DOL}%input[rol-%{DOL}%var[tico\]\]\]==true\]
+%{DOL}%jsonSetString[r%{DOL}%var[tico\]\;%{DOL}%input[rol-%{DOL}%var[tico\]\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%var[?\;si\]
+%{DOL}%else
+%{DOL}%addField[❌ | Error\;
+Rol invalido\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[?\;no\]
+%{DOL}%stop
+%{DOL}%endif
+%{DOL}%elseif[%{DOL}%input[desc-%{DOL}%var[tico\]\]!=\]
+%{DOL}%jsonSetString[d%{DOL}%var[tico\]\;%{DOL}%input[desc-%{DOL}%var[tico\]\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%var[?\;si\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%input[res-%{DOL}%var[tico\]\]!=\]
+%{DOL}%jsonParse[%{DOL}%getUserVar[respuestas\;%{DOL}%botID\;%{DOL}%guildID\]\]
+%{DOL}%jsonSetString[re%{DOL}%var[tico\]\;%{DOL}%input[res-%{DOL}%var[tico\]\]\]
+%{DOL}%setUserVar[respuestas\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%var[?\;si\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%input[dis-%{DOL}%var[tico\]\]!=\]
+%{DOL}%if[%{DOL}%or[%{DOL}%isNumber[%{DOL}%input[dis-%{DOL}%var[tico\]\]\]==true\;%{DOL}%toLowercase[%{DOL}%input[dis-%{DOL}%var[tico\]\]\]==infinito\]==true\]
+%{DOL}%jsonSetString[s%{DOL}%var[tico\]\;%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%isNumber[%{DOL}%input[dis-%{DOL}%var[tico\]\]\]\;true\;%{DOL}%cropText[%{DOL}%input[dis-%{DOL}%var[tico\]\]\;2\;\]\;1\]\;false\;∞\;1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%var[?\;si\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%addField[❌ | Error\;
+Número invalido\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[?\;no\]
+%{DOL}%stop
+%{DOL}%endif
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+$if[$var[?]==si]
+$ephemeral
+$description[Articulo actualizado correctamente]
+$color[00ff00]
+$endif
+
+$elseif[$customID==cf-at]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+
+%{DOL}%if[%{DOL}%message==prec-%{DOL}%var[tico\]\]
+%{DOL}%newModal[m-set-tienda\;Editando articulo %{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addTextInput[prec-%{DOL}%var[tico\]\;short\;Nuevo precio\;\;10\;yes\;\;Ejemplo: 5000\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%message==rol-%{DOL}%var[tico\]\]
+%{DOL}%newModal[m-set-tienda\;Editando articulo %{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addTextInput[rol-%{DOL}%var[tico\]\;short\;ID del rol\;\;\;yes\;\;12947364820383627\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%message==desc-%{DOL}%var[tico\]\]
+%{DOL}%newModal[m-set-tienda\;Editando articulo %{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addTextInput[desc-%{DOL}%var[tico\]\;paragraph\;Nueva descripción\;\;150\;yes\;\;Ejemplo: Compra este articulo\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%message==res-%{DOL}%var[tico\]\]
+%{DOL}%newModal[m-set-tienda\;Editando articulo %{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addTextInput[res-%{DOL}%var[tico\]\;paragraph\;Nueva respuesta\;\;150\;yes\;\;Ejemplo: Usaste este articulo\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%message==dis-%{DOL}%var[tico\]\]
+%{DOL}%newModal[m-set-tienda\;Editando articulo %{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%addTextInput[dis-%{DOL}%var[tico\]\;paragraph\;Cantidad disponible en la tienda\;\;8\;yes\;\;Ejemplo: 3 o infinito\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+
+]]]
+
+$elseif[$customID==t-<]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$var[tico2;0]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%var[tico2\;%{DOL}%sum[%{DOL}%var[tico2\]\;1\]\]
+%{DOL}%if[%{DOL}%var[tico2\]<11\]
+%{DOL}%var[art\;%{DOL}%var[art\]
+``%{DOL}%var[tico2\]`` - **%{DOL}%json[%{DOL}%var[tico\]\]** | ``$%{DOL}%numberSeparator[%{DOL}%json[v%{DOL}%var[tico\]\]\]``
+%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%json[d%{DOL}%var[tico\]\]==\]\;true\;\;1\]\;false\;%{DOL}%json[d%{DOL}%var[tico\]\]
+\;1\]\]
+%{DOL}%endif
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+
+$title[💼 | Tienda de $serverName[$guildID]]
+$description[Para comprar un articulo usa ``$comprar-articulo <nombre>``, para ver la información de una articulo usa ``$info-articulo <nombre>``
+$replaceText[$replaceText[$checkCondition[$var[art]==];true;
+No hay nada en esta tienda, posiblemente fué robada 😱;1];false;$var[art];1]]
+$color[6e00ff]
+$footer[Página 1/2]
+$editButton[t-<;;secondary;yes;⬅️;]
+$editButton[t->;;secondary;$if[$var[tico2]>=11]no$elseyes$endif;➡️;]
+$elseif[$customID==t->]
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;11]
+$var[tico2;10]
+$eval[$repeatMessage[10;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%var[tico2\;%{DOL}%sum[%{DOL}%var[tico2\]\;1\]\]
+%{DOL}%var[art\;%{DOL}%var[art\]
+``%{DOL}%var[tico2\]`` - **%{DOL}%json[%{DOL}%var[tico\]\]** | ``$%{DOL}%numberSeparator[%{DOL}%json[v%{DOL}%var[tico\]\]\]``
+%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%json[d%{DOL}%var[tico\]\]==\]\;true\;\;1\]\;false\;%{DOL}%json[d%{DOL}%var[tico\]\]
+\;1\]\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]
+
+$title[💼 | Tienda de $serverName[$guildID]]
+$description[Para comprar un articulo usa ``$comprar-articulo <nombre>``, para ver la información de una articulo usa ``$info-articulo <nombre>``
+$replaceText[$replaceText[$checkCondition[$var[art]==];true;
+No hay nada en esta tienda, posiblemente fué robada 😱;1];false;$var[art];1]]
+$color[6e00ff]
+$footer[Página 2/2]
+$editButton[t-<;;secondary;no;⬅️;]
+$editButton[t->;;secondary;yes;➡️;]
+$endif
