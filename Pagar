@@ -1,0 +1,45 @@
+PREFIJO: +pagar (o cualquiera)
+
+$nomention
+$suppressErrors[❌ | Algo no anda bien...]
+$onlyIf[$mentioned[1]!=;❌ | Sigue el formato `` <user> <cantidad> <moneda>``]
+$onlyIf[$isNumber[$message[2]]==true;❌ | Sigue el formato `` <user> <cantidad> <moneda>``]
+$var[moneda;$replaceText[$replaceText[$message;$message[1];;1];$message[2];;1]]
+$onlyIf[$checkContains[$toLowercase[$var[moneda]];dinero;dinero negro]==true;❌ | Indica la moneda (dinero o dinero negro)]
+
+$onlyIf[$or[$toLowercase[$var[moneda]]==dinero;$toLowercase[$var[moneda]]==dinero negro]==true;❌ | Selecciona una moneda válida **``"dinero" o "dinero negro"``**]
+$onlyIf[$message[2]>0;❌ | Ingresa un número superior a 0]
+
+$if[$toLowercase[$var[moneda]]==dinero]
+$jsonParse[$getUserVar[Economia;$authorID;$guildID]]
+$onlyIf[$json[dinero]>=$message[2];❌ | No tienes esta cantidad de dinero]
+
+$jsonSetString[dinero;$sub[$json[dinero];$message[2]]]
+$setUserVar[Economia;$jsonStringify;$authorID;$guildID]
+
+$jsonParse[$getUserVar[Economia;$mentioned[1];$guildID]]
+$jsonSetString[dinero;$sum[$json[dinero];$message[2]]]
+$setUserVar[Economia;$jsonStringify;$mentioned[1];$guildID]
+
+$addField[✅ | Hecho correctamente;
+Le pagaste a <@$mentioned[1]> la cantidad de **$$numberSeparator[$message[2]] dinero**]
+$color[00ff00]
+
+$elseif[$toLowercase[$var[moneda]]==dinero negro]
+$jsonParse[$getUserVar[Economia;$authorID;$guildID]]
+$onlyIf[$json[Ndinero]>=$message[2];❌ | No tienes esta cantidad de dinero negro]
+
+$jsonSetString[Ndinero;$sub[$json[Ndinero];$message[2]]]
+$setUserVar[Economia;$jsonStringify;$authorID;$guildID]
+
+$jsonParse[$getUserVar[Economia;$mentioned[1];$guildID]]
+$jsonSetString[Ndinero;$sum[$json[Ndinero];$message[2]]]
+$setUserVar[Economia;$jsonStringify;$mentioned[1];$guildID]
+
+$addField[✅ | Hecho correctamente;
+Le pagaste a <@$mentioned[1]> la cantidad de **$numberSeparator[$message[2]] Dinero negro**]
+$color[00ff00]
+
+$else
+❌ | Algo salió mal...
+$endif
