@@ -1,0 +1,41 @@
+PREFIJO: +item-info (o cualquiera)
+
+$nomention
+$try
+$argsCheck[>1;]
+$catch
+$description[❌ Especifica el articulo]
+$color[ff0000]
+$stop
+$endtry
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico\]\]\]==%{DOL}%toLowercase[%{DOL}%message\]\]
+%{DOL}%addField[
+ℹ️ | Información del articulo\;
+**Nombre:** %{DOL}%json[%{DOL}%var[tico\]\]
+
+**Precio:** ``$%{DOL}%numberSeparator[%{DOL}%json[v%{DOL}%var[tico\]\]\]``
+
+**Disponibles:** %{DOL}%json[s%{DOL}%var[tico\]\]
+
+**Descripción:** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%json[d%{DOL}%var[tico\]\]==\]\;true\;Ninguna descripción especificada\;1\]\;false\;%{DOL}%json[d%{DOL}%var[tico\]\]\;1\]
+
+**Rol a dar:** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%roleExists[%{DOL}%json[r%{DOL}%var[tico\]\]\]\;true\;<@&%{DOL}%json[r%{DOL}%var[tico\]\]>\;1\]\;false\;Ninguno\;1\]
+
+**Respuesta (al usarlo):** %{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%checkCondition[%{DOL}%jsonParse[%{DOL}%getUserVar[respuestas\;%{DOL}%botID\;%{DOL}%guildID\]\]%{DOL}%json[re%{DOL}%var[tico\]\]==Articulo usado correctamente\]\;true\;Ninguna respuesta configurada\;1\]\;false\;%{DOL}%jsonParse[%{DOL}%getUserVar[respuestas\;%{DOL}%botID\;%{DOL}%guildID\]\]%{DOL}%json[re%{DOL}%var[tico\]\]\;1\]
+
+Para comprar este articulo usa ``$comprar-articulo %{DOL}%message``\]
+%{DOL}%footer[%{DOL}%serverName[%{DOL}%guildID\]\]
+%{DOL}%footerIcon[%{DOL}%serverIcon\]
+%{DOL}%color[6e00ff\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%var[tico\]>=20\]
+%{DOL}%addField[❌ | Uppss...\;
+El articulo especificado no existe\]
+%{DOL}%color[ff0000\]
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
