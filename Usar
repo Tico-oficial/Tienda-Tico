@@ -1,0 +1,60 @@
+PREFIJO: +usar (o cualquiera)
+
+$nomention
+$try
+$argsCheck[>1;]
+$catch
+$description[❌ Especifica el articulo a usar]
+$color[ff0000]
+$stop
+$endtry
+
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico\]\]\]==%{DOL}%toLowercase[%{DOL}%message\]\]
+%{DOL}%jsonSetString[s%{DOL}%var[tico\]\;%{DOL}%sub[%{DOL}%json[s%{DOL}%var[tico\]\]\;1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%authorID\;%{DOL}%guildID\]
+%{DOL}%var[nm\;%{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%stop
+%{DOL}%elseif[%{DOL}%var[tico\]>=20\]
+%{DOL}%addField[❌ | Uppss...\;
+El articulo no existe en tu inventario\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[stop\;si\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
+
+$if[$var[stop]==si]
+$stop
+$endif
+
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$if[$json[s$var[tico]]<=0]
+$jsonSetString[$var[tico];]
+$jsonSetString[s$var[tico];0]
+$setUserVar[articulos;$jsonStringify;$authorID;$guildID]
+$endif
+
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$if[$roleExists[$json[r$var[tico]]]==true]
+$roleGrant[$authorID;+$json[r$var[tico]]]
+$endif
+
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%var[nm\]==%{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%var[nu\;%{DO}%var[tico\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
+
+$jsonParse[$getUserVar[respuestas;$botID;$guildID]]
+$description[$replaceText[$replaceText[$checkCondition[$json[re$var[tico]]==Articulo . usuado correctamente];true;$replaceText[$json[re$var[tico]];.;$var[nm];1];1];false;$json[re$var[tico]];1]]
+$color[00ff00]
