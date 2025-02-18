@@ -1,0 +1,24 @@
+PREFIJO: +inventario (o cualquiera)
+
+$nomention
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$var[tico;1]
+$var[tico2;0]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]!=\]
+%{DOL}%var[tico2\;%{DOL}%sum[%{DOL}%var[tico2\]\;1\]\]
+%{DOL}%var[art\;%{DOL}%var[art\]
+``%{DOL}%var[tico2\]`` - **%{DOL}%json[%{DOL}%var[tico\]\]** x%{DOL}%json[s%{DOL}%var[tico\]\]
+\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+
+$title[🎒 | Inventario de $nickname]
+$thumbnail[$authorAvatar]
+$description[$replaceText[$replaceText[$checkCondition[$var[art]==];true;
+No hay nada en tu inventario 🙃;1];false;Este es tu inventario
+$var[art];1]]
+$color[$replaceText[$replaceText[$checkCondition[$var[art]==];true;ff0000;1];false;6e00ff;1]]
+$footer[$nickname]
+$footerIcon[$authorAvatar]
