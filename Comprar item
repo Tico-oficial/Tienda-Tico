@@ -1,0 +1,118 @@
+PREFIJO: +comprar-item (o cualquiera)
+
+$nomention
+$try
+$argsCheck[>1;]
+$catch
+$description[❌ Especifica el articulo a comprar]
+$color[ff0000]
+$stop
+$endtry
+
+$jsonParse[$getUserVar[Economia;$authorID;$guildID]]
+$var[dinero;$json[dinero]]
+
+$jsonParse[$getUserVar[articulos;$botID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico\]\]\]==%{DOL}%toLowercase[%{DOL}%message\]\]
+%{DOL}%if[%{DOL}%or[%{DOL}%json[s%{DOL}%var[tico\]\]==∞\;%{DOL}%json[s%{DOL}%var[tico\]\]>0\]==true\]
+%{DOL}%var[nm\;%{DOL}%json[%{DOL}%var[tico\]\]\]
+%{DOL}%var[pre\;%{DOL}%json[v%{DOL}%var[tico\]\]\]
+%{DOL}%var[rol\;%{DOL}%json[r%{DOL}%var[tico\]\]\]
+%{DOL}%if[%{DOL}%json[s%{DOL}%var[tico\]\]!=∞\]
+%{DOL}%jsonSetString[s%{DOL}%var[tico\]\;%{DOL}%sub[%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%isNumber[%{DOL}%json[s%{DOL}%var[tico\]\]\]\;false\;0\;1\]\;true\;%{DOL}%json[s%{DOL}%var[tico\]\]\;1\]\;1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%botID\;%{DOL}%guildID\]
+%{DOL}%stop
+%{DOL}%endif
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%addField[❌ | Error\;
+Este articulo se encuentra agotado :(\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[stop\;si\]
+%{DOL}%stop
+%{DOL}%endif
+%{DOL}%elseif[%{DOL}%var[tico\]>=20\]
+%{DOL}%addField[❌ | Error\;
+Este articulo no existe\]
+%{DOL}%color[ff0000\]
+%{DOL}%var[stop\;si\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
+
+$if[$var[stop]==si]
+$stop
+$endif
+
+$if[$var[dinero]>=$var[pre]]
+$else
+$addField[❌ | Uppss...;
+No tenes suficiente dinero para comprar este articulo :(]
+$color[ff0000]
+$stop
+$endif
+
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%toLowercase[%{DOL}%json[%{DOL}%var[tico\]\]\]==%{DOL}%toLowercase[%{DOL}%message\]\]
+%{DOL}%jsonSetString[s%{DOL}%var[tico\]\;%{DOL}%sum[%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%isNumber[%{DOL}%json[s%{DOL}%var[tico\]\]\]\;false\;0\;1\]\;true\;%{DOL}%json[s%{DOL}%var[tico\]\]\;1\]\;1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%authorID\;%{DOL}%guildID\]
+%{DOL}%addField[✅ | Compra exitosa\;
+Compraste correctamente el articulo **%{DOL}%message**\]
+%{DOL}%color[00ff00\]
+%{DOL}%var[stop\;si\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+%{DOL}%endif
+]]]
+
+$if[$var[stop]==si]
+$jsonParse[$getUserVar[Economia;$authorID;$guildID]]
+$jsonSetString[dinero;$sub[$json[dinero];$var[pre]]]
+$setUserVar[Economia;$jsonStringify;$authorID;$guildID]
+$stop
+$endif
+
+$var[vacio;0]
+$var[tico;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico\]\]==\]
+%{DOL}%var[vacio\;%{DOL}%sum[%{DOL}%var[vacio\]\;1\]\]
+%{DOL}%endif
+%{DOL}%var[tico\;%{DOL}%sum[%{DOL}%var[tico\]\;1\]\]
+]]]
+
+$if[$var[vacio]>0]
+$else
+$stop
+$addField[❌ | Error;
+No tenes espacio para comprar más articulos]
+$color[ff0000]
+$endif
+
+$jsonParse[$getUserVar[articulos;$authorID;$guildID]]
+$var[tico2;1]
+$eval[$repeatMessage[10;$repeatMessage[2;
+%{DOL}%if[%{DOL}%json[%{DOL}%var[tico2\]\]==\]
+%{DOL}%jsonSetString[%{DOL}%var[tico2\]\;%{DOL}%var[nm\]\]
+%{DOL}%jsonSetString[r%{DOL}%var[tico2\]\;%{DOL}%var[rol\]\]
+%{DOL}%jsonSetString[s%{DOL}%var[tico2\]\;%{DOL}%sum[%{DOL}%replaceText[%{DOL}%replaceText[%{DOL}%isNumber[%{DOL}%json[s%{DOL}%var[tico2\]\]\]\;false\;0\;1\]\;true\;%{DOL}%json[s%{DOL}%var[tico2\]\]\;1\]\;1\]\]
+%{DOL}%setUserVar[articulos\;%{DOL}%jsonStringify\;%{DOL}%authorID\;%{DOL}%guildID\]
+%{DOL}%addField[✅ | Compra exitosa\;
+Compraste correctamente el articulo **%{DOL}%var[nm\]**\]
+%{DOL}%color[00ff00\]
+%{DOL}%stop
+%{DOL}%else
+%{DOL}%var[tico2\;%{DOL}%sum[%{DOL}%var[tico2\]\;1\]\]
+%{DOL}%endif
+]]]
+
+$jsonParse[$getUserVar[Economia;$authorID;$guildID]]
+$jsonSetString[dinero;$sub[$json[dinero];$var[pre]]]
+$setUserVar[Economia;$jsonStringify;$authorID;$guildID]
